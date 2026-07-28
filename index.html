@@ -188,7 +188,7 @@ select{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radiu
       <div class="nav-item" onclick="navigate('colaboradores')"><i class="ti ti-users"></i> Colaboradores</div>
       <div class="nav-item" onclick="navigate('aniversarios')"><i class="ti ti-cake"></i> Aniversários</div>
       <div class="nav-item" onclick="navigate('empresa')"><i class="ti ti-building"></i> Tempo de empresa</div>
-      <div class="nav-item" onclick="navigate('ramais')"><i class="ti ti-phone"></i> Ramais / Yaestar</div>
+      <div class="nav-item" onclick="navigate('ramais')"><i class="ti ti-phone"></i> Ramais / E-mail</div>
     </nav>
   </aside>
 
@@ -396,7 +396,7 @@ function navigate(section){
   document.querySelectorAll('.nav-item').forEach(el=>{
     el.classList.toggle('active',el.getAttribute('onclick').includes("'"+section+"'"));
   });
-  const titles={resumo:'Resumo por pessoa',equipamentos:'Equipamentos',movimentar:'Movimentar equipamento',historico:'Histórico de movimentações',colaboradores:'Colaboradores',aniversarios:'Aniversários',empresa:'Tempo de empresa',ramais:'Ramais / Yaestar'};
+ const titles={resumo:'Resumo por pessoa',equipamentos:'Equipamentos',movimentar:'Movimentar equipamento',historico:'Histórico de movimentações',colaboradores:'Colaboradores',aniversarios:'Aniversários',empresa:'Tempo de empresa',ramais:'Ramais / E-mail'};
   document.getElementById('topbar-title').textContent=titles[section];
   render(section);
 }
