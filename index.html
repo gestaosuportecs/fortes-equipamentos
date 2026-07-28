@@ -715,7 +715,7 @@ function renderEquipamentos(){
             <td style="color:var(--gray-600);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.descricao||'—'}</td>
             <td>${STATUS_BADGE[e.status]||e.status}</td>
             <td>${e.colaborador_atual?`<span style="display:flex;align-items:center;gap:6px"><div class="avatar" style="width:24px;height:24px;font-size:10px;background:var(--green-light);color:var(--green)">${initials(e.colaborador_atual.nome)}</div>${e.colaborador_atual.nome}</span>`:'<span style="color:var(--gray-400)">—</span>'}</td>
-            <td><button class="btn btn-sm" onclick="openEditEquipamento('${e.id}')"><i class="ti ti-edit"></i></button></td>
+            <td><button class="btn btn-sm" onclick="openEditEquipamento('${e.id}')"><i class="ti ti-edit"></i></button> <button class="btn btn-sm btn-danger" onclick="deleteEquipamento('${e.id}')"><i class="ti ti-trash"></i></button></td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -973,7 +973,26 @@ function openEditEquipamento(id){
   document.getElementById('modal-equip-title').textContent='Editar equipamento';
   openModal('modal-equipamento');
 }
-async function saveEquipamento(){
+async function deleteEquipamento(id){
+  const e=equipamentos.find(x=>x.id===id);if(!e)return;
+  let msg=`Tem certeza que deseja excluir este equipamento?\n\n${e.tipo} — ${e.patrimonio}`;
+  if(e.colaborador_atual)msg+=`\n\nEle está atualmente alocado com ${e.colaborador_atual.nome}.`;
+  const movVinculadas=movimentacoes.filter(m=>m.equipamento_id===id);
+  if(movVinculadas.length>0)msg+=`\n\nEste equipamento possui ${movVinculadas.length} movimentação(ões) no histórico. Elas serão mantidas, mas deixarão de mostrar o tipo/patrimônio.`;
+  if(!confirm(msg))return;
+  try{
+    await api('equipamentos?id=eq.'+id,'DELETE');
+    equipamentos=equipamentos.filter(x=>x.id!==id);
+    showToast('Equipamento excluído!');render(currentSection);
+  }catch(e){
+    if((e.message||'').toLowerCase().includes('foreign key')||(e.message||'').toLowerCase().includes('violates')){
+      showToast('Não foi possível excluir: equipamento possui vínculos no histórico não tratados.','error');
+    }else{
+      showToast(e.message,'error');
+    }
+  }
+}
+  async function saveEquipamento(){
   const id=document.getElementById('equip-id').value;
   const colabId=document.getElementById('equip-colaborador').value;
   const data={tipo:document.getElementById('equip-tipo').value,patrimonio:document.getElementById('equip-patrimonio').value.trim(),descricao:document.getElementById('equip-descricao').value.trim()||null,status:document.getElementById('equip-status').value,colaborador_atual_id:colabId||null};
